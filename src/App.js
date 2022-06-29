@@ -1,24 +1,35 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import { useColorMode, Box, Button, IconButton } from "@chakra-ui/react";
+import { SunIcon, MoonIcon } from "@chakra-ui/icons";
+import Lists from "./components/Lists";
 
 function App() {
+  const { colorMode, toggleColorMode } = useColorMode();
+  const people = [
+    { person: "Nuril" },
+    { person: "Rizqi" },
+    { person: "Imroatul" },
+    { person: "Amalia" },
+  ];
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Box className="h-[100vh] flex justify-center items-center gap-x-5">
+      <Button onClick={toggleColorMode}>
+        {colorMode === "light" ? "dark" : "light"} mode
+      </Button>
+      <IconButton
+        role="iconButton"
+        onClick={toggleColorMode}
+        icon={colorMode === "dark" ? <SunIcon /> : <MoonIcon />}
+      />
+      <div>
+        {people.map((item, key) => (
+          <div key={key}>
+            <Lists role={`lists`} roleId={`list-${key}`} item={item} />
+          </div>
+        ))}
+      </div>
+    </Box>
   );
 }
 

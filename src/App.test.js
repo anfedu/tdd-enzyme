@@ -1,32 +1,66 @@
-// import { render, screen } from '@testing-library/react';
 import App from "./App";
 import { shallow } from "enzyme";
+import { useColorMode } from "@chakra-ui/react";
+
+jest.mock("@chakra-ui/icons", () => {
+  return {
+    SunIcon: "SunIcon",
+    MoonIcon: "MoonIcon",
+  };
+});
+jest.mock("@chakra-ui/react", () => {
+  return {
+    Box: "Box",
+    Button: "Button",
+    IconButton: "IconButton",
+    useColorMode: jest.fn(),
+  };
+});
 
 describe("App", () => {
-  // let wrapper;
-  // beforeEach(() => {
-  //   wrapper = shallow(<App />);
-  // });
+  let wrapper;
+  let toggleColorModeMock = jest.fn();
+  beforeEach(() => {
+    // <-- must declare first -->
+    useColorMode.mockReturnValue({
+      colorMode: "dark",
+      toggleColorMode: toggleColorModeMock,
+    });
 
-  test("render", () => {
-    const component = shallow(<App />);
-    console.log(component.debug());
-
-    expect(component).toMatchSnapshot();
+    // <-- must last declare -->
+    wrapper = shallow(<App />);
   });
 
-  // it("render div", () => {
-  //   const element = wrapper.find("div").exists();
-  //   expect(element).toBe(true);
-  // });
+  // <-- snap and check changed file -->
+  it("render", () => {
+    expect(wrapper).toMatchSnapshot();
+  });
 
-  // it("render <a>", () => {
-  //   const element = wrapper.find("a");
-  //   expect(element).toHaveLength(1);
-  // });
+  // <-- check existing elements -->
+  it("Lists component", () => {
+    const listsElement = wrapper.find("[role='lists']").exists();
+    expect(listsElement).toBe(true);
+  });
 
-  // it("render img", () => {
-  //   const element = wrapper.find("img");
-  //   expect(element).toHaveLength(1);
+  // <-- check props -->
+  it("List component", () => {
+    const listElement = wrapper.find("[roleId='list-0']").props();
+    expect(listElement.item.person).toBe("Nuril");
+  });
+
+  it("When app on dark mode, component should render properly", () => {
+    const iconProps = wrapper.find("[role='iconButton']").props();
+    expect(iconProps.icon.type).toBe("SunIcon");
+
+    iconProps.onClick();
+    expect(toggleColorModeMock).toHaveBeenCalled();
+  });
+
+  // it("When app on light mode, component should render properly", () => {
+  //   const iconProps = wrapper.find("[role='iconButton']").props();
+  //   expect(iconProps.icon.type).toBe("MoonIcon");
+
+  //   iconProps.onClick();
+  //   expect(toggleColorModeMock).toHaveBeenCalled();
   // });
 });

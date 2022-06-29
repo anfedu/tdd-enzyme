@@ -1,5 +1,73 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`App render 1`] = `ShallowWrapper {}`;
-
-exports[`App test render 1`] = `ShallowWrapper {}`;
+exports[`App render 1`] = `
+<Box
+  className="h-[100vh] flex justify-center items-center gap-x-5"
+>
+  <Button
+    onClick={[MockFunction]}
+  >
+    light
+     mode
+  </Button>
+  <IconButton
+    icon={<SunIcon />}
+    onClick={[MockFunction]}
+    role="iconButton"
+  />
+  <div>
+    <div
+      key="0"
+    >
+      <Lists
+        item={
+          Object {
+            "person": "Nuril",
+          }
+        }
+        role="lists"
+        roleId="list-0"
+      />
+    </div>
+    <div
+      key="1"
+    >
+      <Lists
+        item={
+          Object {
+            "person": "Rizqi",
+          }
+        }
+        role="lists"
+        roleId="list-1"
+      />
+    </div>
+    <div
+      key="2"
+    >
+      <Lists
+        item={
+          Object {
+            "person": "Imroatul",
+          }
+        }
+        role="lists"
+        roleId="list-2"
+      />
+    </div>
+    <div
+      key="3"
+    >
+      <Lists
+        item={
+          Object {
+            "person": "Amalia",
+          }
+        }
+        role="lists"
+        roleId="list-3"
+      />
+    </div>
+  </div>
+</Box>
+`;
