@@ -1,66 +1,150 @@
 import App from "./App";
-import { shallow } from "enzyme";
+import { shallow, mount } from "enzyme";
 import { useColorMode } from "@chakra-ui/react";
+import Products from "./components/Products";
+import { withHooks } from "jest-react-hooks-shallow";
+import { rest } from "msw";
+import { setupServer } from "msw/node";
+import { createWaitForElement } from "enzyme-wait";
 
-jest.mock("@chakra-ui/icons", () => {
-  return {
-    SunIcon: "SunIcon",
-    MoonIcon: "MoonIcon",
-  };
-});
-jest.mock("@chakra-ui/react", () => {
-  return {
-    Box: "Box",
-    Button: "Button",
-    IconButton: "IconButton",
-    useColorMode: jest.fn(),
-  };
-});
+// <-- simple mock react-query -->
+// import { useQuery } from "react-query";
+// jest.mock("react-query");
 
-describe("App", () => {
-  let wrapper;
+// <-- use spyOn for mock
+import * as ReactQuery from "react-query";
+
+const server = setupServer();
+
+let mockData = [
+  {
+    id: 1,
+    attributes: {
+      product: "from enzyme",
+      createdAt: "2022-06-29T06:38:10.456Z",
+      updatedAt: "2022-06-29T06:42:50.763Z",
+      publishedAt: "2022-06-29T06:42:50.761Z",
+    },
+  },
+];
+
+// describe("App", () => {
+//   let wrapper;
+//   let toggleColorModeMock = jest.fn();
+//   beforeEach(() => {
+//     // <-- wrapper component -->
+//     wrapper = shallow(<App />);
+//   });
+
+//   // <-- snap and check changed file -->
+//   it("render", () => {
+//     expect(wrapper).toMatchSnapshot();
+//   });
+// });
+
+describe("Products", () => {
   let toggleColorModeMock = jest.fn();
+  let useQuery = jest.spyOn(ReactQuery, "useQuery");
+  let QueryClientProvider = jest.spyOn(ReactQuery, "QueryClientProvider");
+  let QueryClient = jest.spyOn(ReactQuery, "QueryClient");
+
+  beforeAll(() => {
+    server.listen();
+  });
+
+  afterEach(() => {
+    server.resetHandlers();
+  });
+
   beforeEach(() => {
-    // <-- must declare first -->
+    // <-- mock declaration -->
     useColorMode.mockReturnValue({
       colorMode: "dark",
       toggleColorMode: toggleColorModeMock,
     });
 
-    // <-- must last declare -->
-    wrapper = shallow(<App />);
+    useQuery.mockReturnValue({
+      isLoading: false,
+      error: null,
+      data: mockData,
+    });
   });
 
-  // <-- snap and check changed file -->
-  it("render", () => {
-    expect(wrapper).toMatchSnapshot();
+  afterAll(() => {
+    server.close();
   });
 
-  // <-- check existing elements -->
+  it("render snapshot", () => {
+    const component = shallow(<Products />);
+    expect(component).toMatchSnapshot();
+  });
+
+  it("isLoading true", () => {
+    useQuery.mockReturnValue({
+      isLoading: true,
+      error: null,
+      data: null,
+    });
+    const component = shallow(<Products />);
+    expect(component.exists()).toBe(true);
+  });
+
+  it("error", () => {
+    useQuery.mockReturnValue({
+      isLoading: false,
+      error: "Error",
+      data: null,
+    });
+    const component = shallow(<Products />);
+    expect(component.exists()).toBe(true);
+  });
+
   it("Lists component", () => {
-    const listsElement = wrapper.find("[role='lists']").exists();
+    const component = shallow(<Products />);
+    const listsElement = component.find("[role='lists']").exists();
     expect(listsElement).toBe(true);
   });
 
-  // <-- check props -->
-  it("List component", () => {
-    const listElement = wrapper.find("[roleId='list-0']").props();
-    expect(listElement.item.person).toBe("Nuril");
-  });
-
-  it("When app on dark mode, component should render properly", () => {
-    const iconProps = wrapper.find("[role='iconButton']").props();
+  it("dark mode", () => {
+    const component = shallow(<Products />);
+    const iconProps = component.find("[role='iconButton']").props();
     expect(iconProps.icon.type).toBe("SunIcon");
 
     iconProps.onClick();
     expect(toggleColorModeMock).toHaveBeenCalled();
   });
 
-  // it("When app on light mode, component should render properly", () => {
-  //   const iconProps = wrapper.find("[role='iconButton']").props();
-  //   expect(iconProps.icon.type).toBe("MoonIcon");
+  it("light mode", () => {
+    useColorMode.mockReturnValue({
+      colorMode: "light",
+      toggleColorMode: toggleColorModeMock,
+    });
+    const component = shallow(<Products />);
+    const iconProps = component.find("[role='iconButton']").props();
+    expect(iconProps.icon.type).toBe("MoonIcon");
 
-  //   iconProps.onClick();
-  //   expect(toggleColorModeMock).toHaveBeenCalled();
-  // });
+    iconProps.onClick();
+    expect(toggleColorModeMock).toHaveBeenCalled();
+  });
+
+  it("when data render", () => {
+    const component = shallow(<Products />);
+    expect(component).toMatchSnapshot();
+  });
+
+  it("when mounted api call", () => {
+    // useQuery.mockRestore();
+    const waitForList = createWaitForElement("#element");
+    server.use(
+      rest.get("http://localhost:1337/api/products"),
+      (req, res, ctx) => {
+        return res(ctx.json(mockData));
+      }
+    );
+    const component = shallow(<Products />);
+    // console.log(component.debug());
+    waitForList(component).then((component) => {
+      console.log("testing");
+    });
+  });
 });
