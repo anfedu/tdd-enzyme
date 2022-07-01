@@ -3,24 +3,24 @@ import Enzyme from "enzyme";
 import Adapter from "@wojtekmaj/enzyme-adapter-react-17";
 import enableHooks from "jest-react-hooks-shallow";
 import { Box, Button, IconButton, useColorMode } from "@chakra-ui/react";
-const { JSDOM } = require("jsdom");
 
-const jsdom = new JSDOM("<!doctype html><html><body></body></html>");
-const { window } = jsdom;
-
-function copyProps(src, target) {
-  Object.defineProperties(target, {
-    ...Object.getOwnPropertyDescriptors(src),
-    ...Object.getOwnPropertyDescriptors(target),
-  });
-}
-
-global.window = window;
-global.document = window.document;
-global.navigator = {
-  userAgent: "node.js",
-};
-copyProps(window, global);
+// <-- jsdom config -->
+// const { JSDOM } = require("jsdom");
+// const jsdom = new JSDOM("<!doctype html><html><body></body></html>");
+// const { window } = jsdom;
+// function copyProps(src, target) {
+//   Object.defineProperties(target, {
+//     ...Object.getOwnPropertyDescriptors(src),
+//     ...Object.getOwnPropertyDescriptors(target),
+//   });
+// }
+// global.window = window;
+// global.document = window.document;
+// global.navigator = {
+//   userAgent: "node.js",
+// };
+// copyProps(window, global);
+// <-- jsdom config -->
 
 Enzyme.configure({ adapter: new Adapter() });
 
@@ -43,7 +43,5 @@ jest.mock("@chakra-ui/react", () => {
   };
 });
 jest.mock("axios", () => {
-  return {
-    axios: jest.fn(),
-  };
+  return jest.fn();
 });

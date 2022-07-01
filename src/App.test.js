@@ -47,6 +47,8 @@ describe("Products", () => {
   let useQuery = jest.spyOn(ReactQuery, "useQuery");
   let QueryClientProvider = jest.spyOn(ReactQuery, "QueryClientProvider");
   let QueryClient = jest.spyOn(ReactQuery, "QueryClient");
+  let queryClient = new QueryClient();
+  let wrapper;
 
   beforeAll(() => {
     server.listen();
@@ -68,6 +70,12 @@ describe("Products", () => {
       error: null,
       data: mockData,
     });
+
+    // wrapper = mount(
+    //   <QueryClientProvider client={new QueryClient()}>
+    //     <Products />
+    //   </QueryClientProvider>
+    // );
   });
 
   afterAll(() => {
@@ -133,16 +141,15 @@ describe("Products", () => {
   });
 
   it("when mounted api call", () => {
-    // useQuery.mockRestore();
+    useQuery.mockRestore();
     const waitForList = createWaitForElement("#element");
     server.use(
-      rest.get("http://localhost:1337/api/products"),
-      (req, res, ctx) => {
+      rest.get("http://localhost:1337/api/products", (req, res, ctx) => {
+        console.log("testing");
         return res(ctx.json(mockData));
-      }
+      })
     );
     const component = shallow(<Products />);
-    // console.log(component.debug());
     waitForList(component).then((component) => {
       console.log("testing");
     });
