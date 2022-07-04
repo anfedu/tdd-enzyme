@@ -28,20 +28,6 @@ let mockData = [
   },
 ];
 
-// describe("App", () => {
-//   let wrapper;
-//   let toggleColorModeMock = jest.fn();
-//   beforeEach(() => {
-//     // <-- wrapper component -->
-//     wrapper = shallow(<App />);
-//   });
-
-//   // <-- snap and check changed file -->
-//   it("render", () => {
-//     expect(wrapper).toMatchSnapshot();
-//   });
-// });
-
 describe("Products", () => {
   let toggleColorModeMock = jest.fn();
   let useQuery = jest.spyOn(ReactQuery, "useQuery");
@@ -70,12 +56,6 @@ describe("Products", () => {
       error: null,
       data: mockData,
     });
-
-    // wrapper = mount(
-    //   <QueryClientProvider client={new QueryClient()}>
-    //     <Products />
-    //   </QueryClientProvider>
-    // );
   });
 
   afterAll(() => {
@@ -141,7 +121,7 @@ describe("Products", () => {
   });
 
   it("when mounted api call", () => {
-    useQuery.mockRestore();
+    // useQuery.mockRestore();
     const waitForList = createWaitForElement("#element");
     server.use(
       rest.get("http://localhost:1337/api/products", (req, res, ctx) => {
