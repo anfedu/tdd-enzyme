@@ -15,9 +15,7 @@ exports[`Products render snapshot 1`] = `
     onClick={[MockFunction]}
     role="iconButton"
   />
-  <div
-    id="element"
-  >
+  <div>
     <div
       key="0"
     >
@@ -56,9 +54,7 @@ exports[`Products when data render 1`] = `
     onClick={[MockFunction]}
     role="iconButton"
   />
-  <div
-    id="element"
-  >
+  <div>
     <div
       key="0"
     >

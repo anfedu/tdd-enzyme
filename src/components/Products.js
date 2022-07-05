@@ -28,7 +28,7 @@ export default function Products() {
         onClick={toggleColorMode}
         icon={colorMode === "dark" ? <SunIcon /> : <MoonIcon />}
       />
-      <div id="element">
+      <div>
         {data.map((item, key) => (
           <div key={key}>
             <Lists role={`lists`} roleId={`list-${key}`} item={item} />

@@ -1,20 +1,14 @@
-import App from "./App";
 import { shallow, mount } from "enzyme";
 import { useColorMode } from "@chakra-ui/react";
-import Products from "./components/Products";
+import Products from "../components/Products";
 import { withHooks } from "jest-react-hooks-shallow";
-import { rest } from "msw";
-import { setupServer } from "msw/node";
-import { createWaitForElement } from "enzyme-wait";
 
 // <-- simple mock react-query -->
-// import { useQuery } from "react-query";
-// jest.mock("react-query");
+import { useQuery } from "react-query";
+jest.mock("react-query");
 
 // <-- use spyOn for mock
-import * as ReactQuery from "react-query";
-
-const server = setupServer();
+// import * as ReactQuery from "react-query";
 
 let mockData = [
   {
@@ -30,19 +24,7 @@ let mockData = [
 
 describe("Products", () => {
   let toggleColorModeMock = jest.fn();
-  let useQuery = jest.spyOn(ReactQuery, "useQuery");
-  let QueryClientProvider = jest.spyOn(ReactQuery, "QueryClientProvider");
-  let QueryClient = jest.spyOn(ReactQuery, "QueryClient");
-  let queryClient = new QueryClient();
   let wrapper;
-
-  beforeAll(() => {
-    server.listen();
-  });
-
-  afterEach(() => {
-    server.resetHandlers();
-  });
 
   beforeEach(() => {
     // <-- mock declaration -->
@@ -56,10 +38,6 @@ describe("Products", () => {
       error: null,
       data: mockData,
     });
-  });
-
-  afterAll(() => {
-    server.close();
   });
 
   it("render snapshot", () => {
@@ -118,20 +96,5 @@ describe("Products", () => {
   it("when data render", () => {
     const component = shallow(<Products />);
     expect(component).toMatchSnapshot();
-  });
-
-  it("when mounted api call", () => {
-    // useQuery.mockRestore();
-    const waitForList = createWaitForElement("#element");
-    server.use(
-      rest.get("http://localhost:1337/api/products", (req, res, ctx) => {
-        console.log("testing");
-        return res(ctx.json(mockData));
-      })
-    );
-    const component = shallow(<Products />);
-    waitForList(component).then((component) => {
-      console.log("testing");
-    });
   });
 });
